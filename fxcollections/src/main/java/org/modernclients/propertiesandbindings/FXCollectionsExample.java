@@ -2,7 +2,12 @@ package org.modernclients.propertiesandbindings;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableFloatArray;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,40 +15,73 @@ import java.util.Random;
 
 public class FXCollectionsExample {
     public static void main(String[] args) {
-        ObservableList<String> strings =
+        ObservableList<String> list =
                 FXCollections.observableArrayList();
-        strings.addListener(new MyListener());
+        ObservableMap<String, String> map =
+                FXCollections.observableHashMap();
+        ObservableSet<Integer> set =
+                FXCollections.observableSet();
+        ObservableFloatArray array =
+                FXCollections.observableFloatArray();
 
-        System.out.println("Calling addAll(\"Zero\"," +
-                " \"One\", \"Two\", \"Three\"): ");
-        strings.addAll("Zero", "One", "Two", "Three");
+        list.addListener((ListChangeListener<String>) c -> {
+            System.out.println("\tlist = " +
+                    c.getList());
+        });
+        map.addListener((MapChangeListener<String, String>) c -> {
+            System.out.println("\tmap = " +
+                    c.getMap());
+        });
+        set.addListener((SetChangeListener<Integer>) c -> {
+            System.out.println("\tset = " +
+                    c.getSet());
+        });
+        array.addListener((observableArray,
+                           sizeChanged, from, to) -> {
+            System.out.println("\tarray = " +
+                    observableArray);
+        });
 
-        System.out.println("Calling copy: ");
-        FXCollections.copy(strings,
+        manipulateList(list);
+        manipulateMap(map);
+        manipulateSet(set);
+        manipulateArray(array);
+    }
+
+    private static void manipulateList(
+            ObservableList<String> list) {
+        System.out.println("Calling list.addAll(\"Zero\"," +
+                " \"One\", \"Two\", \"Three\"):");
+        list.addAll("Zero", "One", "Two", "Three");
+
+        System.out.println("Calling copy(list," +
+                " Arrays.asList(\"Four\", \"Five\")):");
+        FXCollections.copy(list,
                 Arrays.asList("Four", "Five"));
 
-        System.out.println("Calling replaceAll: ");
-        FXCollections.replaceAll(strings, "Two", "Two_1");
+        System.out.println("Calling replaceAll(list," +
+                " \"Two\", \"Two_1\"):");
+        FXCollections.replaceAll(list, "Two", "Two_1");
 
-        System.out.println("Calling reverse: ");
-        FXCollections.reverse(strings);
+        System.out.println("Calling reverse(list):");
+        FXCollections.reverse(list);
 
-        System.out.println("Calling rotate(strings, 2): ");
-        FXCollections.rotate(strings, 2);
+        System.out.println("Calling rotate(list, 2):");
+        FXCollections.rotate(list, 2);
 
-        System.out.println("Calling shuffle(strings): ");
-        FXCollections.shuffle(strings);
+        System.out.println("Calling shuffle(list):");
+        FXCollections.shuffle(list);
 
-        System.out.println("Calling shuffle(strings," +
-                " new Random(0L)): ");
-        FXCollections.shuffle(strings, new Random(0L));
+        System.out.println("Calling shuffle(list," +
+                " new Random(0L)):");
+        FXCollections.shuffle(list, new Random(0L));
 
-        System.out.println("Calling sort(strings): ");
-        FXCollections.sort(strings);
+        System.out.println("Calling sort(list):");
+        FXCollections.sort(list);
 
-        System.out.println("Calling sort(strings, c)" +
+        System.out.println("Calling sort(list, c)" +
                 " with custom comparator: ");
-        FXCollections.sort(strings, new Comparator<String>() {
+        FXCollections.sort(list, new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
                 // Reverse the order
@@ -51,76 +89,28 @@ public class FXCollectionsExample {
             }
         });
 
-        System.out.println("Calling fill(strings," +
+        System.out.println("Calling fill(list," +
                 " \"Ten\"): ");
-        FXCollections.fill(strings, "Ten");
+        FXCollections.fill(list, "Ten");
     }
 
-    private static class MyListener implements ListChangeListener<String> {
-        @Override
-        public void onChanged(Change<? extends String> change) {
-            System.out.println("\tlist = " + change.getList());
-            System.out.println(prettyPrint(change));
-        }
+    private static void manipulateMap(
+            ObservableMap<String, String> map) {
+        System.out.println("Calling map.put(\"Key\"," +
+                " \"Value\"):");
+        map.put("Key", "Value");
+    }
 
-        private String prettyPrint(Change<? extends String> change) {
-            StringBuilder sb = new StringBuilder("\tChange event data:\n");
-            int i = 0;
-            while (change.next()) {
-                sb.append("\t\tcursor = ")
-                        .append(i++)
-                        .append("\n");
+    private static void manipulateSet(
+            ObservableSet<Integer> set) {
+        System.out.println("Calling set.add(1024):");
+        set.add(1024);
+    }
 
-                final String kind =
-                        change.wasPermutated() ? "permutated" :
-                                change.wasReplaced() ? "replaced" :
-                                        change.wasRemoved() ? "removed" :
-                                                change.wasAdded() ? "added" : "none";
-
-                sb.append("\t\tKind of change: ")
-                        .append(kind)
-                        .append("\n");
-
-                sb.append("\t\tAffected range: [")
-                        .append(change.getFrom())
-                        .append(", ")
-                        .append(change.getTo())
-                        .append("]\n");
-
-                if (kind.equals("added") || kind.equals("replaced")) {
-                    sb.append("\t\tAdded size: ")
-                            .append(change.getAddedSize())
-                            .append("\n");
-                    sb.append("\t\tAdded sublist: ")
-                            .append(change.getAddedSubList())
-                            .append("\n");
-                }
-
-                if (kind.equals("removed") || kind.equals("replaced")) {
-                    sb.append("\t\tRemoved size: ")
-                            .append(change.getRemovedSize())
-                            .append("\n");
-                    sb.append("\t\tRemoved: ")
-                            .append(change.getRemoved())
-                            .append("\n");
-                }
-
-                if (kind.equals("permutated")) {
-                    StringBuilder permutationStringBuilder = new StringBuilder("[");
-                    for (int k = change.getFrom(); k < change.getTo(); k++) {
-                        permutationStringBuilder.append(k)
-                                .append("->")
-                                .append(change.getPermutation(k));
-                        if (k < change.getTo() - 1) {
-                            permutationStringBuilder.append(", ");
-                        }
-                    }
-                    permutationStringBuilder.append("]");
-                    String permutation = permutationStringBuilder.toString();
-                    sb.append("\t\tPermutation: ").append(permutation).append("\n");
-                }
-            }
-            return sb.toString();
-        }
+    private static void manipulateArray(
+            ObservableFloatArray array) {
+        System.out.println("Calling  array.addAll(3.14159f," +
+                " 2.71828f):");
+        array.addAll(3.14159f, 2.71828f);
     }
 }
