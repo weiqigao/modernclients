@@ -81,12 +81,9 @@ public class FXCollectionsExample {
 
         System.out.println("Calling sort(list, c)" +
                 " with custom comparator: ");
-        FXCollections.sort(list, new Comparator<String>() {
-            @Override
-            public int compare(String lhs, String rhs) {
-                // Reverse the order
-                return rhs.compareTo(lhs);
-            }
+        FXCollections.sort(list, (lhs, rhs) -> {
+            // Reverse the order
+            return rhs.compareTo(lhs);
         });
 
         System.out.println("Calling fill(list," +
