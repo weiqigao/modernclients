@@ -6,8 +6,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.javamodularity:moduleplugin:1.4.1'
-        classpath 'org.openjfx:javafx-plugin:0.0.7'
+        classpath 'org.javamodularity:moduleplugin:1.8.6'
+        classpath 'org.openjfx:javafx-plugin:0.0.9'
     }
 }
 
@@ -18,6 +18,7 @@ subprojects {
     apply plugin: 'org.openjfx.javafxplugin'
 
     javafx {
+        version = '17'
         modules = [ 'javafx.base',
             'javafx.graphics',
             'javafx.controls',
@@ -25,7 +26,7 @@ subprojects {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {

@@ -23,9 +23,8 @@ public class TriangleAreaExample {
 
         final NumberBinding sum1 = Bindings.add(x1y2, x2y3);
         final NumberBinding sum2 = Bindings.add(sum1, x3y1);
-        final NumberBinding sum3 = Bindings.add(sum2, x3y1);
         final NumberBinding diff1 =
-                Bindings.subtract(sum3, x1y3);
+                Bindings.subtract(sum2, x1y3);
         final NumberBinding diff2 =
                 Bindings.subtract(diff1, x2y1);
         final NumberBinding determinant =
